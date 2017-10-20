@@ -7,7 +7,7 @@ package com.artopia;
 
 public class Initial{
 
-	//git test1
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
