@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Rectangle;
 
 public class LoginApp {
 
@@ -51,33 +52,43 @@ public class LoginApp {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
+		new CommonUse().setOptionPaneFont();
+		
 		frmArtopia = new JFrame();
+		frmArtopia.getContentPane().setBounds(new Rectangle(15, 15, 270, 270));
+		frmArtopia.setResizable(false);
 		frmArtopia.setIconImage(Toolkit.getDefaultToolkit().getImage(LoginApp.class.getResource("/com/artopia/logo.png")));
 		frmArtopia.setTitle("Artopia\u5B66\u751F\u4FE1\u606F\u7CFB\u7EDF");
-		frmArtopia.setBounds(100, 100, 450, 300);
+		frmArtopia.setBounds(100, 100, 300, 300);
 		frmArtopia.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmArtopia.getContentPane().setLayout(new MigLayout("", "[100][100,grow 20][100,grow 20][100]", "[10][40px,grow][20][30][20][30,grow][20][30,grow][20]"));
+		frmArtopia.getContentPane().setLayout(new MigLayout("", "[100][150]", "[10][20px,grow][40][40][20][30,grow]"));
 		
 		JLabel lblTitle = new JLabel("Artopia\u5B66\u751F\u7CFB\u7EDF");
 		lblTitle.setFont(new Font("Œ¢»Ì—≈∫⁄", Font.BOLD, 18));
-		frmArtopia.getContentPane().add(lblTitle, "cell 1 1 2 1,alignx center,aligny center");
+		frmArtopia.getContentPane().add(lblTitle, "cell 0 1 2 1,alignx center,aligny center");
 		
 		JLabel lblUsername = new JLabel("\u7528\u6237\u540D\uFF1A");
-		frmArtopia.getContentPane().add(lblUsername, "cell 1 3,alignx left");
+		lblUsername.setFont(new Font("Œ¢»Ì—≈∫⁄", Font.PLAIN, 14));
+		frmArtopia.getContentPane().add(lblUsername, "cell 0 2,alignx trailing");
 		
 		username = new JTextField();
-		frmArtopia.getContentPane().add(username, "cell 2 3,alignx center");
+		username.setFont(new Font("Œ¢»Ì—≈∫⁄", Font.PLAIN, 14));
+		frmArtopia.getContentPane().add(username, "cell 1 2,alignx center");
 		username.setColumns(20);
 		frmArtopia.getContentPane().setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{username, password}));
 				
 		JLabel lblPassword = new JLabel("\u5BC6\u7801\uFF1A");
-		frmArtopia.getContentPane().add(lblPassword, "cell 1 5,alignx left");
+		lblPassword.setFont(new Font("Œ¢»Ì—≈∫⁄", Font.PLAIN, 14));
+		frmArtopia.getContentPane().add(lblPassword, "cell 0 3,alignx trailing");
 		
 		password = new JPasswordField();
+		password.setFont(new Font("Œ¢»Ì—≈∫⁄", Font.PLAIN, 14));
 		password.setColumns(20);
-		frmArtopia.getContentPane().add(password, "cell 2 5,alignx center");
+		frmArtopia.getContentPane().add(password, "cell 1 3,alignx center");
 				
 		JButton btnLogin = new JButton("\u767B\u5F55");
+		btnLogin.setFont(new Font("Œ¢»Ì—≈∫⁄", Font.PLAIN, 12));
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!username.getText().trim().equals("") ) {
@@ -109,17 +120,18 @@ public class LoginApp {
 				}
 			}
 		});
-		frmArtopia.getContentPane().add(btnLogin, "cell 1 7,alignx center");
+		frmArtopia.getContentPane().add(btnLogin, "cell 0 5,alignx right");
 		
 		JButton btnRegiste = new JButton("\u6CE8\u518C");
+		btnRegiste.setFont(new Font("Œ¢»Ì—≈∫⁄", Font.PLAIN, 12));
 		btnRegiste.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frmArtopia.dispose();
-				new CreateRegisterPanel();
+				new RegisteFrame();
 				
 			}
 		});
-		frmArtopia.getContentPane().add(btnRegiste, "cell 2 7,alignx center");
+		frmArtopia.getContentPane().add(btnRegiste, "cell 1 5,alignx center");
 	
 		
 		//∞¥ªÿ≥µÃ¯◊™passowrd
@@ -140,10 +152,13 @@ public class LoginApp {
 					}
 		});
 		
+		//
+		frmArtopia.setVisible(true);
 		// …Ë÷√≥ı ºŒª÷√
 		frmArtopia.setLocationRelativeTo(null);
 		// …Ë÷√µ±¥∞ø⁄πÿ±’ ±£¨±£÷§JVM“≤ÕÀ≥ˆ
 		frmArtopia.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmArtopia.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{username, password}));
 	}
 	
 	public JTextField getUsername() {
@@ -152,7 +167,7 @@ public class LoginApp {
 
 	public LoginApp(String user) {
 		// TODO Auto-generated constructor stub
-		username = new CreateLoginPanel().getUsername();
+		initialize();
 		username.setText(user);
 		username.selectAll();
 						

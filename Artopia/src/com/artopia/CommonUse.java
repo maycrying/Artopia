@@ -1,5 +1,6 @@
 package com.artopia;
 
+import java.awt.Font;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.JComboBox;
+import javax.swing.UIManager;
 
 public class CommonUse {
 	
@@ -99,5 +101,10 @@ public class CommonUse {
 		}
 		
 		return newtimes;
+	}
+	
+	public void setOptionPaneFont() {
+		UIManager.put("OptionPane.messageFont", new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
+		UIManager.put("OptionPane.buttonFont", new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
 	}
 }

@@ -327,11 +327,13 @@ public class CreateRegisterPanel extends JFrame implements ActionListener{
 					cbclass.setSelectedIndex(0);
 				}
 				else {
+					new CommonUse().setOptionPaneFont();
 					JOptionPane.showMessageDialog(null, "学生姓为空！");
 					lname.requestFocus();
 				}
 			}
 			else {
+				new CommonUse().setOptionPaneFont();
 				JOptionPane.showMessageDialog(null, "学生名为空！");
 				fname.requestFocus();
 				
