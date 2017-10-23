@@ -98,7 +98,7 @@ public class LoginApp {
 							int uid = account.getUserID(username.getText(), String.valueOf(password.getPassword()));
 							if(uid!=0) {
 								frmArtopia.dispose();
-								new CreateUserPanel(uid);
+								new UserFrame(uid);
 							}
 							else {
 								JOptionPane.showMessageDialog(null, "用户名或者密码不正确！");

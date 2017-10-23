@@ -63,7 +63,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 	private String[] students = null;
 	
 	
-	boolean isLastItemisNew = true;
+	boolean isNewStudentItemExist = true;
 	
 	/**
 	 * Create the frame.
@@ -154,13 +154,13 @@ public class RegisteFrame extends JFrame implements ActionListener{
 
 		
 		cbStudents.setPreferredSize(new Dimension(14, 20));
-		cbStudents.setMinimumSize(new Dimension(70, 20));
+		cbStudents.setMinimumSize(new Dimension(100, 20));
 		cbStudents.setFont(new Font("微软雅黑", Font.PLAIN, 13));
 		cbStudents.setModel(new DefaultComboBoxModel<>(new String[] {"\u5B66\u751F1", "\u65B0\u5B66\u751F"}));
 		cbStudents.setSelectedIndex(0);
 		cbStudents.setEditable(true);
 		cbStudents.setBounds(0, 0, 80, 20);
-		loginPane.add(cbStudents, "cell 0 9,alignx left");
+		loginPane.add(cbStudents, "cell 0 9,growx");
 		
 		
 		
@@ -306,7 +306,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 				
 				//如果选的是最后一项，即“新学生”
 				if(index == count -1) {
-					if(isLastItemisNew) {
+					if(isNewStudentItemExist) {
 						if(!fname.getText().equals("")) {
 							if(!lname.getText().equals("")) {
 								
@@ -319,7 +319,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 									//清除所有项目并添加存储的student信息	
 									cbStudents.removeAllItems();
 									for(int i=0;i<students.length/3;i++) {
-									cbStudents.addItem(students[i*3]+" "+students[i*3+1]);
+									cbStudents.addItem(students[i*3]+" "+students[i*3+1].substring(0, 1));
 									}
 									//cbStudents.insertItemAt("学生"+count,index);
 									cbStudents.addItem("学生"+count);
@@ -331,6 +331,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 							JOptionPane.showMessageDialog(null, "学生姓为空！");
 							cbStudents.setSelectedIndex(count-2);
 							lname.requestFocus();
+							return;
 							}	
 						}
 						else {
@@ -338,31 +339,96 @@ public class RegisteFrame extends JFrame implements ActionListener{
 							JOptionPane.showMessageDialog(null, "学生名为空！");
 							cbStudents.setSelectedIndex(count-2);
 							fname.requestFocus();
-									
+							return;		
 						}	
 					}
 					else {
-						cbStudents.insertItemAt("学生"+count,index);
-						cbStudents.setSelectedIndex(index);
+						if(!fname.getText().equals("")) {
+							if(!lname.getText().equals("")) {
+								cbStudents.insertItemAt("学生"+count,index);
+								cbStudents.setSelectedIndex(cbStudents.getItemCount()-2);
+								isNewStudentItemExist =true;
+							}
+						}
+						fname.setText("");
+						lname.setText("");
+						return;
 					}
 					
+					cbStudents.setSelectedIndex(cbStudents.getItemCount()-2);
 					//充值学生信息框
 					fname.setText("");
 					lname.setText("");
+					
 					cbclass.setSelectedIndex(0);
-					isLastItemisNew =true;
+					isNewStudentItemExist =true;
+				}
+				else if(index == count-2) {
+					//存在"学生x"
+					if(isNewStudentItemExist) {
+						//学生x不为空
+						if(!fname.getText().equals("")&&!lname.getText().equals("")) {
+								list.add(fname.getText());
+								list.add(lname.getText());
+								list.add(cbclass.getSelectedItem().toString());
+				
+								//将现有学生存入student数组
+								students =new CommonUse().getList(list);	
+								//清除所有项目并添加存储的student信息	
+								cbStudents.removeAllItems();
+					
+								for(int i=0;i<students.length/3;i++) {
+									cbStudents.addItem(students[i*3]+" "+students[i*3+1].substring(0, 1));
+								}
+					
+								cbStudents.addItem("新学生");
+								cbStudents.setSelectedIndex(index);
+								isNewStudentItemExist = false;
+							
+						}
+						//学生x信息不完整，退出事件
+						return;
+					}
+					
+					//不存在学生x
+					else {
+						fname.setText(students[index*3]);
+						lname.setText(students[index*3+1]);
+					}
+					//isLastItemisNew = false;
 				}
 				else {
-					if(isLastItemisNew) {
-						cbStudents.removeAllItems();
-						for(int i=0;i<students.length/3;i++) {
-							cbStudents.addItem(students[i*3]+" "+students[i*3+1]);
+					
+						if(isNewStudentItemExist) {
+							//学生x不为空
+							if(!fname.getText().equals("")&&!lname.getText().equals("")) {
+								
+									list.add(fname.getText());
+									list.add(lname.getText());
+									list.add(cbclass.getSelectedItem().toString());
+			
+									//将现有学生存入student数组
+									students =new CommonUse().getList(list);
+							
+									cbStudents.removeAllItems();
+									for(int i=0;i<students.length/3;i++) {
+										cbStudents.addItem(students[i*3]+" "+students[i*3+1].substring(0, 1));
+									}
+									cbStudents.addItem("新学生");	
+							}
+							//学生x信息不完整，删除学生x
+							fname.setText(students[index*3]);
+							lname.setText(students[index*3+1]);
+							cbStudents.removeItemAt(count-2);
+						
 						}
-						cbStudents.addItem("新学生");
-					}
-					fname.setText(students[index*3]);
-					lname.setText(students[index*3+1]);
-					isLastItemisNew = false;
+						else {
+							//存在项目之间切换
+							fname.setText(students[index*3]);
+							lname.setText(students[index*3+1]);
+							return;
+						}
+					isNewStudentItemExist = false;
 				}
 			}
 			

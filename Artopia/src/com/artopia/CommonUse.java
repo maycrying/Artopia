@@ -96,7 +96,7 @@ public class CommonUse {
 		String[] newtimes = new String[times.length*4];
 		for(int i=0;i<times.length;i++) {
 			for(int j=0;j<4;j++) {
-				newtimes[i*4+j]=getNextDate(day, j)+" "+times[i].substring(0, 8);
+				newtimes[i*4+j]=getNextDate(day, j)+" "+times[i].substring(0, times[i].indexOf("-"));
 			}
 		}
 		

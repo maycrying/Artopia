@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Student {
 
@@ -36,7 +38,7 @@ public class Student {
 		}
 	}
 
-	public String getStudentName(int uid) {
+	public String[] getStudentName(int uid) {
 		
 		Connection conn =db.connectDB();
 		
@@ -44,12 +46,18 @@ public class Student {
 			Statement statement= conn.createStatement();
 			ResultSet rSet = statement.executeQuery("SELECT `stu_fname`,`stu_lname` FROM `atp_student` WHERE `user_id` = '"
 			+uid+"'");
-			if(rSet.next()) {
-				return (rSet.getString(1)+rSet.getString(2));
+			
+			List<String> list=new ArrayList<String>();
+			
+			while(rSet.next()) {
+				list.add(rSet.getString(1)+" "+rSet.getString(2));
 			}
+			
 			rSet.close();
 			statement.close();
 			conn.close();
+			
+			return new CommonUse().getList(list);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -76,13 +84,15 @@ public class Student {
 		return -1;
 	}
 	
-	public int getSid(int uid) {
+	public int getSid(int uid,String studentName) {
 		Connection conn =db.connectDB();
-		
+		//将学生姓名拆分成，名和姓
+		String fname = studentName.substring(0,studentName.indexOf(" "));
+		String lname = studentName.substring(studentName.indexOf(" ")+1,studentName.length());
 		try {
 			Statement statement= conn.createStatement();
 			ResultSet rSet = statement.executeQuery("SELECT `stu_id` FROM `atp_student` WHERE `user_id` = '"
-			+uid+"'");
+			+uid+"' AND `stu_fname` = '"+fname+"' AND `stu_lname` = '"+lname+"'");
 			if(rSet.next()) {
 				return rSet.getInt(1);
 			}
