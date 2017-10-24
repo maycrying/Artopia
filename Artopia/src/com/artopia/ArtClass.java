@@ -39,7 +39,7 @@ public class ArtClass {
 			statement.close();
 			conn.close();
 			
-			return new CommonUse().getList(list);  
+			return new Functions().getList(list);  
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -64,7 +64,7 @@ public class ArtClass {
 			statement.close();
 			conn.close();
 			
-			return new CommonUse().noDuplicate(new CommonUse().getList(list));  
+			return new Functions().noDuplicate(new Functions().getList(list));  
 			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -92,7 +92,7 @@ public class ArtClass {
 			statement.close();
 			conn.close();
 			
-			return new CommonUse().noDuplicate(new CommonUse().getList(list)); 
+			return new Functions().noDuplicate(new Functions().getList(list)); 
 			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -120,7 +120,7 @@ public class ArtClass {
 			statement.close();
 			conn.close();
 			
-			return new CommonUse().getList(list); 
+			return new Functions().getList(list); 
 			
 		} catch (Exception e) {
 			// TODO: handle exception

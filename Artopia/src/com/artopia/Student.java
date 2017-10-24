@@ -57,21 +57,21 @@ public class Student {
 			statement.close();
 			conn.close();
 			
-			return new CommonUse().getList(list);
+			return new Functions().getList(list);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return null;
 	}
 
-	public int getBalance(int uid) {
+	public int getBalance(int sid) {
 		
 		Connection conn =db.connectDB();
 		
 		try {
 			Statement statement= conn.createStatement();
-			ResultSet rSet = statement.executeQuery("SELECT `stu_balance` FROM `atp_student` WHERE `user_id` = '"
-			+uid+"'");
+			ResultSet rSet = statement.executeQuery("SELECT `stu_balance` FROM `atp_student` WHERE `stu_id` = '"
+			+sid+"'");
 			if(rSet.next()) {
 				return rSet.getInt(1);
 			}

@@ -53,7 +53,7 @@ public class LoginApp {
 	 */
 	private void initialize() {
 		
-		new CommonUse().setOptionPaneFont();
+		new Functions().setOptionPaneFont();
 		
 		frmArtopia = new JFrame();
 		frmArtopia.getContentPane().setBounds(new Rectangle(15, 15, 270, 270));

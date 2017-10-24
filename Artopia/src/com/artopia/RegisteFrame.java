@@ -70,7 +70,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 	 */
 	public RegisteFrame() {
 		
-		new CommonUse().setOptionPaneFont();
+		new Functions().setOptionPaneFont();
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegisteFrame.class.getResource("/com/artopia/logo.png")));
 		setTitle("\u521B\u5EFA\u65B0\u7528\u6237");
@@ -195,7 +195,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		cbclass.setFont(new Font("微软雅黑", Font.PLAIN, 14));
 		
 		
-		new CommonUse().addItems(cbclass, new ArtClass().getAllClasses());
+		new Functions().addItems(cbclass, new ArtClass().getAllClasses());
 		
 		loginPane.add(cbclass, "cell 1 12,growx");
 		
@@ -315,7 +315,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 									list.add(cbclass.getSelectedItem().toString());
 								
 									//将现有学生存入student数组
-									students =new CommonUse().getList(list);	
+									students =new Functions().getList(list);	
 									//清除所有项目并添加存储的student信息	
 									cbStudents.removeAllItems();
 									for(int i=0;i<students.length/3;i++) {
@@ -373,7 +373,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 								list.add(cbclass.getSelectedItem().toString());
 				
 								//将现有学生存入student数组
-								students =new CommonUse().getList(list);	
+								students =new Functions().getList(list);	
 								//清除所有项目并添加存储的student信息	
 								cbStudents.removeAllItems();
 					
@@ -408,7 +408,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 									list.add(cbclass.getSelectedItem().toString());
 			
 									//将现有学生存入student数组
-									students =new CommonUse().getList(list);
+									students =new Functions().getList(list);
 							
 									cbStudents.removeAllItems();
 									for(int i=0;i<students.length/3;i++) {

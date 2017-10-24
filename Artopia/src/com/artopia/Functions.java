@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.UIManager;
 
-public class CommonUse {
+public class Functions {
 	
 	//获取制定日期的星期
 	public String getWeekOfDate(Date dt) {
@@ -61,6 +62,7 @@ public class CommonUse {
 
 	//将数据库查询结果放入数组
 	public String[] getList(List<String> list) {
+		
 		if(list != null && list.size()>0){//如果list中存入了数据，转化为数组  
 		    String[] array=new String[list.size()];//创建一个和list长度一样的数组  
 		    for(int i=0;i<list.size();i++){  
@@ -68,6 +70,7 @@ public class CommonUse {
 		    }
 		return array;  
 		}
+		
 		return null;
 	}
 	
@@ -107,4 +110,17 @@ public class CommonUse {
 		UIManager.put("OptionPane.messageFont", new Font("微软雅黑", Font.BOLD, 14));
 		UIManager.put("OptionPane.buttonFont", new Font("微软雅黑", Font.PLAIN, 12));
 	}
+
+	public Object[][] getArrays(Vector<Vector<Object>> v) {
+		// TODO Auto-generated method stub
+		Object[][] data =new Object[v.size()][v.get(0).size()];
+		for(int i=0;i<v.size();i++) {
+			for(int j=0;j<v.get(0).size();j++) {
+				data[i][j] = v.get(i).get(j);
+			}
+		}
+		return data;
+	}
+
 }
+

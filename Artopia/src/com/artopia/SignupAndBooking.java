@@ -107,4 +107,25 @@ public class SignupAndBooking {
 		}
 		return false;
 	}
+
+
+	public void updateBalance(int sid) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		try {
+			Statement statement = conn.createStatement();
+
+			statement.executeUpdate("UPDATE atp_student SET stu_balance = stu_balance-10 WHERE stu_id = '"+sid+"'");
+
+			
+			statement.close();
+			conn.close();
+		
+		} catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+	}
 }
