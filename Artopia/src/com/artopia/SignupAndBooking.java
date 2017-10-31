@@ -109,14 +109,14 @@ public class SignupAndBooking {
 	}
 
 
-	public void updateBalance(int sid) {
+	public void updateBalance(int sid, int fee) {
 		// TODO Auto-generated method stub
 		Connection conn =db.connectDB();
 		
 		try {
 			Statement statement = conn.createStatement();
 
-			statement.executeUpdate("UPDATE atp_student SET stu_balance = stu_balance-10 WHERE stu_id = '"+sid+"'");
+			statement.executeUpdate("UPDATE atp_student SET stu_balance = stu_balance-"+fee+" WHERE stu_id = '"+sid+"'");
 
 			
 			statement.close();
@@ -127,5 +127,74 @@ public class SignupAndBooking {
 			e.printStackTrace();
 		}
 		
+	}
+
+
+	public boolean isBooked() {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		try {
+			Statement statement = conn.createStatement();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String classDate = null;
+			String classTime = null;
+			
+			//获得今天的日期
+			classDate = dateFormat.format(new Date());
+			classTime = duration.substring(0,duration.indexOf("-"));
+			
+			
+			//是否存在订课信息
+			ResultSet rSet = statement.executeQuery("SELECT sb_time FROM atp_sign_book WHERE stu_id = '"+sid
+					+"' AND sb_classname = '"+classname+"' AND sb_classday = '"+day+"' AND sb_stime = '"+classTime
+					+"' AND sb_operation = 'Booking' AND sb_classdate = '"+classDate+"'");
+			
+			if(rSet.next()) {
+				
+				//去除存在的订课信息
+				
+				statement.executeUpdate("DELETE FROM atp_sign_book WHERE stu_id = '"+sid
+						+"' AND sb_classname = '"+classname+"' AND sb_classday = '"+day+"' AND sb_stime = '"+classTime
+						+"' AND sb_operation = 'Booking' AND sb_classdate = '"+classDate+"'");
+				
+				return true;
+			}
+			
+			rSet.close();
+			statement.close();
+			conn.close();
+		
+		} catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	//获取signin时需要缴纳的剩余费用
+	public int getRestFee(String classname,int postFee) {
+		// TODO Auto-generated method stub
+		int restFee = 0;
+		Connection conn =db.connectDB();
+		
+		try {
+			Statement statement = conn.createStatement();
+
+			ResultSet rSet = statement.executeQuery("SELECT class_fee FROM atp_class WHERE class_name = '"+classname+"'");
+			
+			if(rSet.next()) {
+				restFee = rSet.getInt(1);
+			}
+			
+			statement.close();
+			conn.close();
+		
+		} catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return restFee-postFee;
 	}
 }

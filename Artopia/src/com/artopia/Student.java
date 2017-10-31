@@ -23,7 +23,7 @@ public class Student {
 		try {
 			Statement statement= conn.createStatement();
 			//stmt.executeUpdate(atp_student.sql);
-			statement.executeUpdate("INSERT INTO atp_student(user_id,stu_lname,stu_fname,class_name)"
+			statement.executeUpdate("INSERT INTO atp_student(user_id,stu_lname,stu_fname,stu_class)"
 			+"VALUES('"+userid+"','"+lname+"','"+fname+"','"+classname+"')");
 			statement.close();
 		} catch (SQLException e) {
@@ -103,5 +103,70 @@ public class Student {
 			// TODO: handle exception
 		}
 		return -1;
+	}
+
+	public String getClassname(int sid) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		//将学生姓名拆分成，名和姓
+		String classname= null;
+		
+		try {
+			Statement statement= conn.createStatement();
+			ResultSet rSet = statement.executeQuery("SELECT stu_class FROM `atp_student` WHERE `stu_id` = '"
+			+sid+"'");
+			if(rSet.next()) {
+				return rSet.getString(1);
+			}
+			rSet.close();
+			statement.close();
+			conn.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return classname;
+	}
+
+	public void removeStudent(int sid) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		try {
+			Statement statement= conn.createStatement();
+			//stmt.executeUpdate(atp_student.sql);
+			statement.executeUpdate("DELETE FROM atp_student WHERE stu_id = '"+sid+"'");
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public void updateStudent(int sid, String fname, String lname,String classname) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		try {
+			Statement statement= conn.createStatement();
+			//stmt.executeUpdate(atp_student.sql);
+			statement.executeUpdate("UPDATE atp_student SET stu_lname = '"+lname+"', stu_fname = '"+fname+"',stu_class = '"+classname+"' WHERE stu_id = '"+sid+"'");
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

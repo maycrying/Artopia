@@ -22,23 +22,25 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class UserFrame {
+public class UserFrame implements ActionListener{
 
 	protected static final int BOOKINGFEE = 10;
 	private JFrame frmUser;
 	private JComboBox<String> cbStudent;
-	JComboBox<Object> cblateclass;
-	JComboBox<Object> cbnowclass;
-	JComboBox<Object> cbnowtime;
-	JComboBox<Object> cbday;
-	JComboBox<Object> cbtime;
+	private JComboBox<Object> cblateclass;
+	private JComboBox<Object> cbnowclass;
+	private JComboBox<Object> cbnowtime;
+	private JComboBox<Object> cbday;
+	private JComboBox<Object> cbtime;
 	private JButton signin,booking;
+	private JMenuItem miAddDel,miBook;
 	
 	private ArtClass artClass;
 	private Student student;
 	private String[] classes,nowtimes,classnames,days,times;
 	
 	int sid=0;
+	static int myuid;
 	Object[][] mydata;
 	
 	private JTable tableInfo;
@@ -141,10 +143,14 @@ public class UserFrame {
 		JMenu menu = new JMenu("\u5B66\u751F");
 		menuBar.add(menu);
 		
-		JMenuItem miAddDel = new JMenuItem("\u6DFB\u52A0/\u5220\u9664\u5B66\u751F");
+		miAddDel = new JMenuItem("\u6DFB\u52A0/\u5220\u9664\u5B66\u751F");
 		menu.add(miAddDel);
 		
-		JMenuItem miBook = new JMenuItem("\u8BA2\u8BFE\u4FE1\u606F");
+		miAddDel.addActionListener(this);
+		miAddDel.setActionCommand("Update");
+		
+		miBook = new JMenuItem("\u8BA2\u8BFE\u4FE1\u606F");
+		
 		menu.add(miBook);
 		
 		JMenuItem miRecord = new JMenuItem("\u4E0A\u8BFE\u660E\u7EC6");
@@ -214,11 +220,15 @@ public class UserFrame {
 		
 	}
 	
+
 	public  UserFrame(int uid) {
 		initialize();
+		
+		myuid =uid;
 	
 		Vector<Object> colNames = new Vector<Object>();
 		Vector<Vector<Object>> content = new Vector<Vector<Object>>();
+		
 		
 		
 		cbnowclass.addActionListener(new ActionListener() {
@@ -279,23 +289,13 @@ public class UserFrame {
 			}
 		});
 		
-		signin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				SignupAndBooking newsb = new SignupAndBooking(sid, cbnowclass.getSelectedItem().toString(), new Functions().getWeekOfDate(new Date()), cbnowtime.getSelectedItem().toString(), "SignIn");
-				if(!newsb.isExist()){
-					newsb.newSB();
-					JOptionPane.showMessageDialog(null, "签到"+cbnowclass.getSelectedItem().toString()+"成功!");
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "你已经签到了"+cbnowclass.getSelectedItem().toString()+"!");
-				}
-			}
-		});
+
 		
 		
 		
+
 		student = new Student();
-	
+		
 		String[] students = student.getStudentName(uid);
 		for(int i=0;i<students.length;i++) {
 			cbStudent.addItem(students[i]);
@@ -310,7 +310,7 @@ public class UserFrame {
 		
 		Vector<Object> dataVector = new Vector<Object>();
 		dataVector.add("该学生的余额：");
-		dataVector.addElement("$"+new Integer(student.getBalance(sid)));
+		dataVector.addElement("$"+new Double(student.getBalance(sid)));
 		
 		content.add(dataVector);
 
@@ -380,20 +380,21 @@ public class UserFrame {
 		tablePane = new JScrollPane(tableInfo);
 		frmUser.getContentPane().add(tablePane, "cell 2 1 1 4,grow");
         
+		//订课按钮响应事件
 		booking.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SignupAndBooking newsb = new SignupAndBooking(sid, cblateclass.getSelectedItem().toString(), cbday.getSelectedItem().toString(), cbtime.getSelectedItem().toString(), "Booking");
 				if(!newsb.isExist()){
 					newsb.newSB();
-					newsb.updateBalance(sid);
-					JOptionPane.showMessageDialog(null, "订课"+cblateclass.getSelectedItem().toString()+"成功!");
+					newsb.updateBalance(sid,BOOKINGFEE);
+					//JOptionPane.showMessageDialog(null, "订课"+cblateclass.getSelectedItem().toString()+"成功!");
 					
 					//设置订课完成后的表单.3行,表头不变
 
 					String[][] tmpdata = {
-							{"该学生原有余额：","$"+new Integer(student.getBalance(sid)+BOOKINGFEE)},
+							{"该学生原有余额：","$"+new Double(student.getBalance(sid)+BOOKINGFEE)},
 							{"订课"+cblateclass.getSelectedItem().toString(),"-$"+BOOKINGFEE},
-							{"该学生现有余额：","$"+student.getBalance(sid)}
+							{"该学生现有余额：","$"+new Double(student.getBalance(sid))}
 					};
 					mydata = tmpdata;
 					myTableModel.updateTable();
@@ -406,11 +407,41 @@ public class UserFrame {
 			}
 		});
 		
+		signin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SignupAndBooking newsb = new SignupAndBooking(sid, cbnowclass.getSelectedItem().toString(), new Functions().getWeekOfDate(new Date()), cbnowtime.getSelectedItem().toString(), "SignIn");
+				//判断是否签到，是否有订课
+				if(!newsb.isExist()){
+					if(newsb.isBooked()) {
+						newsb.newSB();
+						newsb.updateBalance(sid,newsb.getRestFee(cbnowclass.getSelectedItem().toString(),BOOKINGFEE));
+						//JOptionPane.showMessageDialog(null, "签到"+cblateclass.getSelectedItem().toString()+"成功!");
+						
+						//设置订课完成后的表单.3行,表头不变
+
+						String[][] tmpdata = {
+								{"该学生原有余额：","$"+new Double(student.getBalance(sid)+newsb.getRestFee(cbnowclass.getSelectedItem().toString(),BOOKINGFEE))},
+								{"签到"+cbnowclass.getSelectedItem().toString(),"-$"+newsb.getRestFee(cbnowclass.getSelectedItem().toString(),BOOKINGFEE)},
+								{"该学生现有余额：","$"+new Double(student.getBalance(sid))}
+						};
+						mydata = tmpdata;
+						myTableModel.updateTable();
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "你并没有预定"+cbnowclass.getSelectedItem().toString()+"!");
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "你已经签到了"+cbnowclass.getSelectedItem().toString()+"!");
+				}
+			}
+		});
+		
 		cbStudent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sid = student.getSid(uid,cbStudent.getSelectedItem().toString());
 				String[][] tmpdata = {
-						{"该学生现有余额：","$"+student.getBalance(sid)}
+						{"该学生现有余额：","$"+new Double(student.getBalance(sid))}
 				};
 				mydata = tmpdata;
 				myTableModel.updateTable();
@@ -418,9 +449,37 @@ public class UserFrame {
 			
 		});
 		
+		miBook.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		
 		// 设置初始位置
 		frmUser.setLocationRelativeTo(null);
 		frmUser.setVisible(true);
+	}
+
+	public void updateCB() {
+		// TODO Auto-generated method stub
+		int size = cbStudent.getItemCount();
+		student = new Student();
+		
+		String[] students = student.getStudentName(myuid);
+		for(int i=0;i<students.length;i++) {
+			cbStudent.addItem(students[i]);
+		}
+		for(int i=0;i<size;i++) {
+			cbStudent.removeItemAt(0);
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getActionCommand().equals("Update")) {
+			new UpdateStu(myuid, this);
+		}
 	}
 
 }
