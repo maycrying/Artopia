@@ -64,22 +64,25 @@ public class RegisteFrame extends JFrame implements ActionListener{
 	
 	
 	boolean isNewStudentItemExist = true;
+	private JLabel lblWeChat;
+	private JTextField wechat;
 	
 	/**
 	 * Create the frame.
 	 */
 	public RegisteFrame() {
+		setResizable(false);
 		
 		new Functions().setOptionPaneFont();
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegisteFrame.class.getResource("/com/artopia/logo.png")));
 		setTitle("\u521B\u5EFA\u65B0\u7528\u6237");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 300, 415);
+		setBounds(100, 100, 300, 435);
 		loginPane = new JPanel();
 		loginPane.setBorder(new EmptyBorder(15, 15, 15, 15));
 		setContentPane(loginPane);
-		loginPane.setLayout(new MigLayout("", "[100][120px,grow]", "[][][grow][grow][grow][][grow][][][][grow][grow][grow][][grow]"));
+		loginPane.setLayout(new MigLayout("", "[100][120px,grow]", "[][][grow][grow][grow][][grow][][][][][grow][grow][grow][][grow]"));
 		
 		lblUserInfo = new JLabel("\u4E2A\u4EBA\u4FE1\u606F");
 		lblUserInfo.setFont(new Font("微软雅黑", Font.BOLD, 12));
@@ -142,12 +145,21 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		loginPane.add(mobile, "cell 1 6,alignx leading");
 		mobile.setColumns(20);
 		
+		lblWeChat = new JLabel("\u5FAE\u4FE1\u6635\u79F0\uFF1A");
+		lblWeChat.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+		loginPane.add(lblWeChat, "cell 0 7,alignx trailing");
+		
+		wechat = new JTextField();
+		wechat.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+		loginPane.add(wechat, "cell 1 7,alignx leading");
+		wechat.setColumns(20);
+		
 		label_1 = new JLabel("\u5B66\u751F\u4FE1\u606F");
 		label_1.setFont(new Font("微软雅黑", Font.BOLD, 12));
-		loginPane.add(label_1, "cell 0 7");
+		loginPane.add(label_1, "cell 0 8");
 		
 		sepStudent = new JSeparator();
-		loginPane.add(sepStudent, "cell 0 8 2 1,growx");
+		loginPane.add(sepStudent, "cell 0 9 2 1,growx");
 		
 		cbStudents = new JComboBox<String>();
 		
@@ -160,33 +172,33 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		cbStudents.setSelectedIndex(0);
 		cbStudents.setEditable(true);
 		cbStudents.setBounds(0, 0, 80, 20);
-		loginPane.add(cbStudents, "cell 0 9,growx");
+		loginPane.add(cbStudents, "cell 0 10,growx");
 		
 		
 		
 		lblfname = new JLabel("\u5B66\u751F\u7684\u540D\uFF1A");
 		lblfname.setFont(new Font("微软雅黑", Font.PLAIN, 13));
-		loginPane.add(lblfname, "cell 0 10,alignx trailing");
+		loginPane.add(lblfname, "cell 0 11,alignx trailing");
 		
 		fname = new JTextField();
 		fname.setToolTipText("\u5B66\u751F\u540D\uFF0C\u4EC5\u5B57\u6BCD");
 		fname.setFont(new Font("微软雅黑", Font.PLAIN, 14));
-		loginPane.add(fname, "cell 1 10,alignx leading");
+		loginPane.add(fname, "cell 1 11,alignx leading");
 		fname.setColumns(20);
 		
 		label = new JLabel("\u5B66\u751F\u7684\u59D3\uFF1A");
 		label.setFont(new Font("微软雅黑", Font.PLAIN, 13));
-		loginPane.add(label, "cell 0 11,alignx trailing");
+		loginPane.add(label, "cell 0 12,alignx trailing");
 		
 		lname = new JTextField();
 		lname.setToolTipText("\u5B66\u751F\u59D3\uFF0C\u4EC5\u5B57\u6BCD");
 		lname.setFont(new Font("微软雅黑", Font.PLAIN, 14));
-		loginPane.add(lname, "cell 1 11,alignx leading");
+		loginPane.add(lname, "cell 1 12,alignx leading");
 		lname.setColumns(20);
 		
 		lblClass = new JLabel("\u5B66\u751F\u6240\u5B66\u7684\u8BFE\u7A0B\uFF1A");
 		lblClass.setFont(new Font("微软雅黑", Font.PLAIN, 13));
-		loginPane.add(lblClass, "cell 0 12,alignx trailing");
+		loginPane.add(lblClass, "cell 0 13,alignx trailing");
 		
 		cbclass = new JComboBox<>();
 		cbclass.setMaximumRowCount(20);
@@ -197,7 +209,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		
 		new Functions().addItems(cbclass, new ArtClass().getAllClasses());
 		
-		loginPane.add(cbclass, "cell 1 12,growx");
+		loginPane.add(cbclass, "cell 1 13,growx");
 		
 		username.setName("用户名");
 		password.setName("密码");
@@ -205,6 +217,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		fname.setName("学生名");
 		lname.setName("学生姓");
 		mobile.setName("手机号码");
+		wechat.setName("微信昵称");
 		
 		username.addKeyListener(new KeyAdapter() {
 			public void keyTyped(KeyEvent e) {
@@ -277,6 +290,15 @@ public class RegisteFrame extends JFrame implements ActionListener{
 				}
 				e.consume();
 			}
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					wechat.requestFocus();
+				}
+			}
+		});
+		
+		wechat.addKeyListener(new KeyAdapter() {
+			
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					fname.requestFocus();
@@ -435,11 +457,11 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		});
 		registe = new JButton("\u6CE8\u518C");
 		registe.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		loginPane.add(registe, "cell 0 14,alignx trailing");
+		loginPane.add(registe, "cell 0 15,alignx trailing");
 		
 		back = new JButton("\u8FD4\u56DE");
 		back.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		loginPane.add(back, "cell 1 14,alignx center");
+		loginPane.add(back, "cell 1 15,alignx center");
 		
 		registe.addActionListener(this);
 		back.addActionListener(this);
@@ -451,7 +473,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		this.setLocationRelativeTo(null);
 		// 设置当窗口关闭时，保证JVM也退出
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{username, password, repwd, mobile, fname, lname}));
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{username, password, repwd, mobile, wechat, fname, lname}));
 		//显示窗体
 		this.setVisible(true);
 	}
@@ -508,7 +530,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 							Account account = new Account();
 	
 							if(!account.isDuplicate(username.getText())){
-								account.createAccount(username.getText(), String.valueOf(password.getPassword()),mobile.getText());
+								account.createAccount(username.getText(), String.valueOf(password.getPassword()),mobile.getText(),wechat.getText());
 								
 								//写入学生信息,如果有多个学生
 								if(students !=null) {

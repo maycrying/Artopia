@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class SignupAndBooking {
 
@@ -30,6 +32,11 @@ public class SignupAndBooking {
 		op = operation;
 	}
 	
+
+	public SignupAndBooking() {
+		// TODO Auto-generated constructor stub
+	}
+
 
 	public void newSB() {
 		
@@ -109,14 +116,14 @@ public class SignupAndBooking {
 	}
 
 
-	public void updateBalance(int sid, int fee) {
+	public void updateBalance(int uid, int fee) {
 		// TODO Auto-generated method stub
 		Connection conn =db.connectDB();
 		
 		try {
 			Statement statement = conn.createStatement();
 
-			statement.executeUpdate("UPDATE atp_student SET stu_balance = stu_balance-"+fee+" WHERE stu_id = '"+sid+"'");
+			statement.executeUpdate("UPDATE atp_user SET user_balance = user_balance-"+fee+" WHERE user_id = '"+uid+"'");
 
 			
 			statement.close();
@@ -175,8 +182,9 @@ public class SignupAndBooking {
 	//获取signin时需要缴纳的剩余费用
 	public int getRestFee(String classname,int postFee) {
 		// TODO Auto-generated method stub
-		int restFee = 0;
+		int fee = 0;
 		Connection conn =db.connectDB();
+		
 		
 		try {
 			Statement statement = conn.createStatement();
@@ -184,7 +192,7 @@ public class SignupAndBooking {
 			ResultSet rSet = statement.executeQuery("SELECT class_fee FROM atp_class WHERE class_name = '"+classname+"'");
 			
 			if(rSet.next()) {
-				restFee = rSet.getInt(1);
+				fee = rSet.getInt(1);
 			}
 			
 			statement.close();
@@ -195,6 +203,38 @@ public class SignupAndBooking {
 			e.printStackTrace();
 		}
 		
-		return restFee-postFee;
+		return fee-postFee;
+	}
+	
+	public List<String> getBookedList() {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		List<String> userlist = new ArrayList<String>();
+		try {
+			Statement statement = conn.createStatement();
+//			ResultSet rSet = statement.executeQuery("SELECT stu_fname,stu_lname,sb_classname,sb_classdate,sb_stime"+
+//					"FROM atp_sign_book, atp_student" + 
+//					"WHERE sb_classdate >= CURRENT_TIMESTAMP AND sb_operation = 'Booking' AND atp_sign_book.stu_id = atp_student.stu_id");
+			
+			ResultSet rSet = statement.executeQuery("SELECT stu_fname,stu_lname,sb_classname, sb_classdate, sb_stime "
+					+ "FROM atp_sign_book, atp_student "
+					+ "WHERE "
+					+ "sb_classdate >= CURRENT_TIMESTAMP AND sb_operation = 'Booking'"
+					+ "ORDER BY sb_classdate, sb_stime");
+			
+			while(rSet.next()) {
+				userlist.add(rSet.getString(1)+" "+rSet.getString(2));
+				userlist.add(rSet.getString(3));
+				userlist.add(rSet.getString(4)+" "+rSet.getString(5));
+			}
+			rSet.close();
+			statement.close();
+			conn.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return userlist;
 	}
 }

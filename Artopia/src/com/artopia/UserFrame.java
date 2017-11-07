@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 public class UserFrame implements ActionListener{
 
 	protected static final int BOOKINGFEE = 10;
+	protected static final int LOW_BALANCE_NOTICE = 30;
 	private JFrame frmUser;
 	private JComboBox<String> cbStudent;
 	private JComboBox<Object> cblateclass;
@@ -33,7 +34,7 @@ public class UserFrame implements ActionListener{
 	private JComboBox<Object> cbday;
 	private JComboBox<Object> cbtime;
 	private JButton signin,booking;
-	private JMenuItem miAddDel,miBook;
+	private JMenuItem miAddDel,miBook, miRecord;
 	
 	private ArtClass artClass;
 	private Student student;
@@ -45,6 +46,11 @@ public class UserFrame implements ActionListener{
 	
 	private JTable tableInfo;
 	JScrollPane tablePane; 
+	private JMenu menu_Admin,menu_User,menu_Student;
+	private JMenuItem miLowBalance;
+	private JMenu menu_Sys;
+	private JMenuItem miQuit;
+	private JLabel lblStudent;
 	/**
 	 * Launch the application.
 	 */
@@ -92,9 +98,9 @@ public class UserFrame implements ActionListener{
 		lblLateClass.setFont(new Font("微软雅黑", Font.PLAIN, 13));
 		frmUser.getContentPane().add(lblLateClass, "cell 1 0,alignx trailing");
 		
-		JLabel label = new JLabel("\u5B66\u751F\u59D3\u540D\uFF1A");
-		label.setFont(new Font("微软雅黑", Font.PLAIN, 13));
-		frmUser.getContentPane().add(label, "flowx,cell 2 0,alignx leading");
+		lblStudent = new JLabel("\u5B66\u751F\u59D3\u540D\uFF1A");
+		lblStudent.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+		frmUser.getContentPane().add(lblStudent, "flowx,cell 2 0,alignx leading");
 		
 		cbStudent = new JComboBox<>();
 		
@@ -140,52 +146,54 @@ public class UserFrame implements ActionListener{
 		JMenuBar menuBar = new JMenuBar();
 		frmUser.setJMenuBar(menuBar);
 		
-		JMenu menu = new JMenu("\u5B66\u751F");
-		menuBar.add(menu);
+		menu_Sys = new JMenu("\u7CFB\u7EDF");
+		menuBar.add(menu_Sys);
+		
+		miQuit = new JMenuItem("\u9000\u51FA\u767B\u5F55");
+		menu_Sys.add(miQuit);
+		
+		menu_Student = new JMenu("\u5B66\u751F");
+		menuBar.add(menu_Student);
 		
 		miAddDel = new JMenuItem("\u6DFB\u52A0/\u5220\u9664\u5B66\u751F");
-		menu.add(miAddDel);
+		menu_Student.add(miAddDel);
 		
 		miAddDel.addActionListener(this);
 		miAddDel.setActionCommand("Update");
 		
 		miBook = new JMenuItem("\u8BA2\u8BFE\u4FE1\u606F");
 		
-		menu.add(miBook);
+		menu_Student.add(miBook);
 		
-		JMenuItem miRecord = new JMenuItem("\u4E0A\u8BFE\u660E\u7EC6");
-		menu.add(miRecord);
+		miRecord = new JMenuItem("\u4E0A\u8BFE\u660E\u7EC6");
+		menu_Student.add(miRecord);
 		
-		JMenu menu_1 = new JMenu("\u4E2A\u4EBA\u8BBE\u7F6E");
-		menuBar.add(menu_1);
+		menu_User = new JMenu("\u4E2A\u4EBA\u8BBE\u7F6E");
+		menuBar.add(menu_User);
 		
 		JMenuItem miPassword = new JMenuItem("\u4FEE\u6539\u5BC6\u7801");
-		menu_1.add(miPassword);
+		menu_User.add(miPassword);
 		
 		JMenuItem miPersonal = new JMenuItem("\u4FEE\u6539\u4E2A\u4EBA\u4FE1\u606F");
-		menu_1.add(miPersonal);
+		menu_User.add(miPersonal);
 		
-		artClass = new ArtClass();
-
-		String weekday = new Functions().getWeekOfDate(new Date());
+		menu_Admin = new JMenu("\u7BA1\u7406\u5458");
+		menuBar.add(menu_Admin);
 		
-		classes = artClass.findCurrentClass(weekday);
-		if(classes != null) {
-			new Functions().addItems(cbnowclass, classes);
-		}
-		else {
-			cbnowclass.addItem("今天的课都结束了");
-			signin.setEnabled(false);
-		}
+		miLowBalance = new JMenuItem("\u4F4E\u4F59\u989D\u7528\u6237\u67E5\u8BE2");
+		
+		menu_Admin.add(miLowBalance);
+		
+		
+		
+		
+		
+	}
 	
-		nowtimes = artClass.findAvaiableTimes(cbnowclass.getSelectedItem().toString(),
-				weekday);
-		if(nowtimes != null) {
-			new Functions().addItems(cbnowtime, nowtimes);
-		}
-		else {
-			cbnowtime.addItem("无时间段");
-		}
+
+	public  UserFrame(int uid) {
+		initialize();
+		artClass = new ArtClass();
 		
 		classnames = artClass.getAllClasses();
 		if(classnames != null) {
@@ -215,36 +223,40 @@ public class UserFrame implements ActionListener{
 		else {
 			cbtime.addItem("无时间段");
 		}
-		
-		
-		
-	}
-	
+		if(uid == 1) {
+			//预载管理员初始界面
+			signin.setText("签到人员名单");
+			booking.setText("订课人员名单");
+			
+			adminOnly(uid);
+		}
+		else {
+			//预载普通用户初始界面
+			
 
-	public  UserFrame(int uid) {
-		initialize();
-		
-		myuid =uid;
-	
-		Vector<Object> colNames = new Vector<Object>();
-		Vector<Vector<Object>> content = new Vector<Vector<Object>>();
-		
-		
-		
-		cbnowclass.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				times = artClass.findAvaiableTimes(cbnowclass.getSelectedItem().toString(),
-						new Functions().getWeekOfDate(new Date()));
-				//
-				if(times != null) {
-					cbnowtime.removeAllItems();
-					new Functions().addItems(cbnowtime, times);
-				}
-				else {
-					cbnowtime.addItem("无时间段");
-				}
+			String weekday = new Functions().getWeekOfDate(new Date());
+			
+			classes = artClass.findCurrentClass(weekday);
+			if(classes != null) {
+				new Functions().addItems(cbnowclass, classes);
 			}
-		});
+			else {
+				cbnowclass.addItem("今天的课都结束了");
+				signin.setEnabled(false);
+			}
+		
+			nowtimes = artClass.findAvaiableTimes(cbnowclass.getSelectedItem().toString(),
+					weekday);
+			if(nowtimes != null) {
+				new Functions().addItems(cbnowtime, nowtimes);
+			}
+			else {
+				cbnowtime.addItem("无时间段");
+			}
+			
+			
+			userOnly(uid);
+		}
 		
 		cblateclass.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -289,11 +301,203 @@ public class UserFrame implements ActionListener{
 			}
 		});
 		
+		miQuit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frmUser.dispose();
+				new LoginApp();
+			}
+		});
+		
+		// 设置初始位置
+		frmUser.setLocationRelativeTo(null);
+		frmUser.setVisible(true);
+	}
+
+	//管理员界面设计
+	public void adminOnly(int uid) {
+		
+		//隐藏不需要的界面元素
+		menu_User.setVisible(false);		
+		menu_Student.setVisible(false);
+		lblStudent.setVisible(false);
+		cbStudent.setVisible(false);
+		
+		Vector<Object> colNames = new Vector<Object>();
+//		Vector<Vector<Object>> content = new Vector<Vector<Object>>();
+		
+		//设置管理员查询的表头和内容
+		colNames.add("查询");
+		colNames.add("信息");
+				
+//		Vector<Object> dataVector = new Vector<Object>();
+//		dataVector.add("一个世界");
+//		dataVector.addElement("在等待...");
+//				
+//		content.add(dataVector);
+
+				
+		//初始内容
+		String[][] tmpdata = {
+				{"一个世界","在等待..."}
+				};
+		
+		mydata = tmpdata;		
+				
+				
+		//获取当前学生的余额，显示在表中
+			
+		class MyTableModel extends AbstractTableModel {
+			      
+			private static final long serialVersionUID = 1L;
+					
+			private String[] columnNames;
+					
+					
+					
+			private Object[][] data;
+			        
+			public void updateTable() {
+			   	this.columnNames = colNames.toArray(new String[0]);
+			   	this.data = mydata;
+			   	fireTableStructureChanged();
+			}
+			       
+			 
+			public int getColumnCount() {
+				return columnNames.length;
+			}
+			 
+			public int getRowCount() {
+			    return data.length;
+			}
+			        
+			 
+			public String getColumnName(int col) {
+				return columnNames[col];
+			}
+			 
+			public Object getValueAt(int row, int col) {
+			    return data[row][col];
+			}
+			 
+			public boolean isCellEditable(int row, int col) {
+			            
+				return false;
+			          
+			}
+			
+			public void setValueAt(Object value, int row, int col) {
+			          
+			 
+			   data[row][col] = value;
+			   fireTableCellUpdated(row, col);
+			 
+			   
+			}
+			
+		}
+				
+			
+		tableInfo = new JTable();		
+		MyTableModel myTableModel = new MyTableModel();	
+		myTableModel.updateTable();
+		tableInfo.setModel(myTableModel);
+				
+				
+		tablePane = new JScrollPane(tableInfo);
+		frmUser.getContentPane().add(tablePane, "cell 2 1 1 4,grow");
+		Account account = new Account();
+			
+		miLowBalance.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String max = (String)JOptionPane.showInputDialog(
+						frmUser,
+						"低于该数值的用户将会被显示",
+		                "请输入数值", 
+		                JOptionPane.PLAIN_MESSAGE,
+		                null,
+		                null, "25");
+
+				int num = Integer.parseInt(max);
+				
+				//制作显示信息表
+				colNames.clear();
+				colNames.add("微信昵称");
+				colNames.add("余额");
+				colNames.add("联系电话");
+				java.util.List<String> userlist = account.getLowBalanceList(num);
+				String[][] tmpdata= new String[userlist.size()/3][3];
+				for(int i=0; i<userlist.size()/3;i++) {
+					for(int j =0;j<3;j++) {
+						if(j==1) {
+							tmpdata[i][1] ="$"+userlist.get(i*3+j);
+						}
+						else {
+							tmpdata[i][j] = userlist.get(i*3+j);
+						}
+							
+					}	
+				}	
+				mydata = tmpdata;
+				myTableModel.updateTable();
+			}
+		});
+			
+		booking.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SignupAndBooking newsb = new SignupAndBooking();
+				java.util.List<String> userlist = newsb.getBookedList();
+			
+				//制作显示信息表
+				colNames.clear();
+				colNames.add("学生姓名");
+				colNames.add("课程名");
+				colNames.add("时间");
+				
+				String[][] tmpdata= new String[userlist.size()/3][3];
+				for(int i=0; i<userlist.size()/3;i++) {
+					for(int j =0;j<3;j++) {
+						
+							tmpdata[i][j] = userlist.get(i*3+j);
+						
+							
+					}	
+				}	
+				mydata = tmpdata;
+				myTableModel.updateTable();
+			}
+		});
+		
+	}
+	
+	//用户界面设计
+	public void userOnly(int uid) {
+		
+		menu_Admin.setVisible(false);
+		myuid =uid;
+		
+		Vector<Object> colNames = new Vector<Object>();
+		Vector<Vector<Object>> content = new Vector<Vector<Object>>();
+		
+		
+		
+		cbnowclass.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				times = artClass.findAvaiableTimes(cbnowclass.getSelectedItem().toString(),
+						new Functions().getWeekOfDate(new Date()));
+				//
+				if(times != null) {
+					cbnowtime.removeAllItems();
+					new Functions().addItems(cbnowtime, times);
+				}
+				else {
+					cbnowtime.addItem("无时间段");
+				}
+			}
+		});
+		
 
 		
-		
-		
-
 		student = new Student();
 		
 		String[] students = student.getStudentName(uid);
@@ -310,7 +514,7 @@ public class UserFrame implements ActionListener{
 		
 		Vector<Object> dataVector = new Vector<Object>();
 		dataVector.add("该学生的余额：");
-		dataVector.addElement("$"+new Double(student.getBalance(sid)));
+		dataVector.addElement("$"+new Double(student.getBalance(uid)));
 		
 		content.add(dataVector);
 
@@ -386,15 +590,20 @@ public class UserFrame implements ActionListener{
 				SignupAndBooking newsb = new SignupAndBooking(sid, cblateclass.getSelectedItem().toString(), cbday.getSelectedItem().toString(), cbtime.getSelectedItem().toString(), "Booking");
 				if(!newsb.isExist()){
 					newsb.newSB();
-					newsb.updateBalance(sid,BOOKINGFEE);
+					newsb.updateBalance(uid,BOOKINGFEE);
 					//JOptionPane.showMessageDialog(null, "订课"+cblateclass.getSelectedItem().toString()+"成功!");
 					
 					//设置订课完成后的表单.3行,表头不变
-
+					colNames.clear();
+					colNames.add("");
+					colNames.add("金额");
+					if(student.getBalance(uid) <= LOW_BALANCE_NOTICE) {
+						JOptionPane.showMessageDialog(null, "余额过低，请尽快充值!");
+					}
 					String[][] tmpdata = {
-							{"该学生原有余额：","$"+new Double(student.getBalance(sid)+BOOKINGFEE)},
+							{"该学生原有余额：","$"+new Double(student.getBalance(uid)+BOOKINGFEE)},
 							{"订课"+cblateclass.getSelectedItem().toString(),"-$"+BOOKINGFEE},
-							{"该学生现有余额：","$"+new Double(student.getBalance(sid))}
+							{"该学生现有余额：","$"+new Double(student.getBalance(uid))}
 					};
 					mydata = tmpdata;
 					myTableModel.updateTable();
@@ -414,15 +623,22 @@ public class UserFrame implements ActionListener{
 				if(!newsb.isExist()){
 					if(newsb.isBooked()) {
 						newsb.newSB();
-						newsb.updateBalance(sid,newsb.getRestFee(cbnowclass.getSelectedItem().toString(),BOOKINGFEE));
+						newsb.updateBalance(uid,newsb.getRestFee(cbnowclass.getSelectedItem().toString(),BOOKINGFEE));
 						//JOptionPane.showMessageDialog(null, "签到"+cblateclass.getSelectedItem().toString()+"成功!");
 						
 						//设置订课完成后的表单.3行,表头不变
-
+						colNames.clear();
+						colNames.add("");
+						colNames.add("金额");
+						
+						if(student.getBalance(uid) <= LOW_BALANCE_NOTICE) {
+							JOptionPane.showMessageDialog(null, "该学生余额过低，请尽快充值!");
+						}
+						
 						String[][] tmpdata = {
-								{"该学生原有余额：","$"+new Double(student.getBalance(sid)+newsb.getRestFee(cbnowclass.getSelectedItem().toString(),BOOKINGFEE))},
+								{"该学生原有余额：","$"+new Double(student.getBalance(uid)+newsb.getRestFee(cbnowclass.getSelectedItem().toString(),BOOKINGFEE))},
 								{"签到"+cbnowclass.getSelectedItem().toString(),"-$"+newsb.getRestFee(cbnowclass.getSelectedItem().toString(),BOOKINGFEE)},
-								{"该学生现有余额：","$"+new Double(student.getBalance(sid))}
+								{"该学生现有余额：","$"+new Double(student.getBalance(uid))}
 						};
 						mydata = tmpdata;
 						myTableModel.updateTable();
@@ -440,8 +656,13 @@ public class UserFrame implements ActionListener{
 		cbStudent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sid = student.getSid(uid,cbStudent.getSelectedItem().toString());
+				
+				colNames.clear();
+				colNames.add("");
+				colNames.add("金额");
+				
 				String[][] tmpdata = {
-						{"该学生现有余额：","$"+new Double(student.getBalance(sid))}
+						{"现有余额：","$"+new Double(student.getBalance(uid))}
 				};
 				mydata = tmpdata;
 				myTableModel.updateTable();
@@ -451,15 +672,43 @@ public class UserFrame implements ActionListener{
 		
 		miBook.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				sid = student.getSid(uid,cbStudent.getSelectedItem().toString());
 				
+				colNames.clear();
+				colNames.add("课程名");
+				colNames.add("日期");
+				colNames.add("开始时间");
+				java.util.List<String> classlist = student.getBookedClasses(sid);
+				String[][] tmpdata= new String[classlist.size()/3][3];
+				for(int i=0; i<classlist.size()/3;i++) {
+					for(int j =0;j<3;j++) {
+						tmpdata[i][j]= classlist.get(i*3+j);
+					}	
+				}	
+				mydata = tmpdata;
+				myTableModel.updateTable();
 			}
 		});
 		
-		// 设置初始位置
-		frmUser.setLocationRelativeTo(null);
-		frmUser.setVisible(true);
+		miRecord.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sid = student.getSid(uid,cbStudent.getSelectedItem().toString());
+				
+				colNames.clear();
+				colNames.add("课程名");
+				colNames.add("日期");
+				java.util.List<String> classlist = student.getSignedClasses(sid);
+				String[][] tmpdata= new String[classlist.size()/2][2];
+				for(int i=0; i<classlist.size()/2;i++) {
+					for(int j =0;j<2;j++) {
+						tmpdata[i][j]= classlist.get(i*2+j);
+					}	
+				}	
+				mydata = tmpdata;
+				myTableModel.updateTable();
+			}
+		});
 	}
-
 	public void updateCB() {
 		// TODO Auto-generated method stub
 		int size = cbStudent.getItemCount();

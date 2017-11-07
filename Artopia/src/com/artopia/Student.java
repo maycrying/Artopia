@@ -64,14 +64,14 @@ public class Student {
 		return null;
 	}
 
-	public int getBalance(int sid) {
+	public int getBalance(int uid) {
 		
 		Connection conn =db.connectDB();
 		
 		try {
 			Statement statement= conn.createStatement();
-			ResultSet rSet = statement.executeQuery("SELECT `stu_balance` FROM `atp_student` WHERE `stu_id` = '"
-			+sid+"'");
+			ResultSet rSet = statement.executeQuery("SELECT `user_balance` FROM `atp_user` WHERE `user_id` = '"
+			+uid+"'");
 			if(rSet.next()) {
 				return rSet.getInt(1);
 			}
@@ -168,5 +168,48 @@ public class Student {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public List<String> getBookedClasses(int sid) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		List<String> classlist = new ArrayList<String>();
+		try {
+			Statement statement= conn.createStatement();
+			ResultSet rSet = statement.executeQuery("SELECT sb_classname, sb_classdate, sb_stime FROM `atp_sign_book` WHERE `stu_id` = '"
+			+sid+"' AND sb_classdate >= CURRENT_TIMESTAMP AND sb_operation = 'Booking' ORDER BY sb_classdate, sb_stime");
+			while(rSet.next()) {
+				classlist.add(rSet.getString(1));
+				classlist.add(rSet.getString(2));
+				classlist.add(rSet.getString(3));
+			}
+			rSet.close();
+			statement.close();
+			conn.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return classlist;
+	}
+
+	public List<String> getSignedClasses(int sid) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		List<String> classlist = new ArrayList<String>();
+		try {
+			Statement statement= conn.createStatement();
+			ResultSet rSet = statement.executeQuery("SELECT sb_classname, sb_classdate, sb_stime FROM `atp_sign_book` WHERE `stu_id` = '"
+			+sid+"' AND sb_operation = 'SignIn' ORDER BY sb_classdate, sb_stime");
+			while(rSet.next()) {
+				classlist.add(rSet.getString(1));
+				classlist.add(rSet.getString(2)+" "+rSet.getString(3));
+			}
+			rSet.close();
+			statement.close();
+			conn.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return classlist;
 	}
 }

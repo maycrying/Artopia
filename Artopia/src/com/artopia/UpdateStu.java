@@ -228,7 +228,7 @@ public class UpdateStu extends JDialog implements ActionListener{
 				//getRootPane().setDefaultButton(okButton);
 			}
 			{
-				JButton cancelButton = new JButton("È¡Ïû");
+				JButton cancelButton = new JButton("\u5173\u95ED");
 				
 				cancelButton.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 13));
 				cancelButton.addActionListener(this);
