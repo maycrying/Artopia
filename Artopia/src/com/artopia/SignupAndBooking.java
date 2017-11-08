@@ -206,7 +206,36 @@ public class SignupAndBooking {
 		return fee-postFee;
 	}
 	
-	public List<String> getBookedList() {
+	public List<String> getBookedList(String classname, String datetime) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		List<String> userlist = new ArrayList<String>();
+		try {
+			Statement statement = conn.createStatement();
+//			ResultSet rSet = statement.executeQuery("SELECT stu_fname,stu_lname,sb_classname,sb_classdate,sb_stime"+
+//					"FROM atp_sign_book, atp_student" + 
+//					"WHERE sb_classdate >= CURRENT_TIMESTAMP AND sb_operation = 'Booking' AND atp_sign_book.stu_id = atp_student.stu_id");
+			String date = datetime.substring(0,datetime.indexOf(' '));
+			String time = datetime.substring(datetime.indexOf(' ')+1);
+			ResultSet rSet = statement.executeQuery("SELECT stu_fname,stu_lname FROM atp_sign_book,atp_student WHERE "
+					+ "sb_classdate = '"+date+"' AND sb_stime= '"+time+"' AND sb_classname = '"+classname+"' AND sb_operation = 'Booking' AND atp_sign_book.stu_id = atp_student.stu_id");
+			
+			while(rSet.next()) {
+				userlist.add(rSet.getString(1)+" "+rSet.getString(2));
+			}
+			rSet.close();
+			statement.close();
+			conn.close();
+		} catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return userlist;
+	}
+	
+	public List<String> getAllBookedList() {
 		// TODO Auto-generated method stub
 		Connection conn =db.connectDB();
 		
@@ -220,19 +249,46 @@ public class SignupAndBooking {
 			ResultSet rSet = statement.executeQuery("SELECT stu_fname,stu_lname,sb_classname, sb_classdate, sb_stime "
 					+ "FROM atp_sign_book, atp_student "
 					+ "WHERE "
-					+ "sb_classdate >= CURRENT_TIMESTAMP AND sb_operation = 'Booking'"
+					+ "sb_classdate >= CURRENT_TIMESTAMP AND sb_operation = 'Booking' AND atp_sign_book.stu_id = atp_student.stu_id "
 					+ "ORDER BY sb_classdate, sb_stime");
 			
 			while(rSet.next()) {
 				userlist.add(rSet.getString(1)+" "+rSet.getString(2));
 				userlist.add(rSet.getString(3));
-				userlist.add(rSet.getString(4)+" "+rSet.getString(5));
+				userlist.add(rSet.getString(4).substring(rSet.getString(4).indexOf('-')+1)+" "+rSet.getString(5).substring(0,5));
 			}
 			rSet.close();
 			statement.close();
 			conn.close();
 		} catch (Exception e) {
 			// TODO: handle exception
+		}
+		
+		return userlist;
+	}
+
+
+	public List<String> getSignedList(String day, String classname, String time) {
+		// TODO Auto-generated method stub
+	Connection conn =db.connectDB();
+		
+		List<String> userlist = new ArrayList<String>();
+		try {
+			Statement statement = conn.createStatement();
+			String predate = new Functions().getPreDate();
+			ResultSet rSet = statement.executeQuery("SELECT stu_fname,stu_lname FROM atp_sign_book,atp_student WHERE "
+					+ "sb_classday = '"+day+"' AND sb_stime= '"+time+"' AND sb_classname = '"+classname
+					+"' AND sb_operation = 'Signin' AND atp_sign_book.stu_id = atp_student.stu_id AND sb_classdate>= '"+predate+"'");
+			
+			while(rSet.next()) {
+				userlist.add(rSet.getString(1)+" "+rSet.getString(2));
+			}
+			rSet.close();
+			statement.close();
+			conn.close();
+		} catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		return userlist;

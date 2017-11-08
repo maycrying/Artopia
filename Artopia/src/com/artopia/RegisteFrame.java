@@ -106,6 +106,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		loginPane.add(lblPwd, "cell 0 3,alignx trailing");
 		
 		password = new JPasswordField();
+		password.setToolTipText("\u8BF7\u8F93\u51656\u4F4D\u4EE5\u4E0A\u7684\u5BC6\u7801");
 		password.setFont(new Font("微软雅黑", Font.PLAIN, 13));
 		password.setColumns(20);
 		loginPane.add(password, "cell 1 3,alignx leading");
@@ -129,6 +130,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		});
 		
 		repwd = new JPasswordField();
+		repwd.setToolTipText("\u8BF7\u8F93\u5165\u4E00\u6837\u7684\u5BC6\u7801");
 		repwd.setFont(new Font("微软雅黑", Font.PLAIN, 13));
 		repwd.setColumns(20);
 		loginPane.add(repwd, "cell 1 4,alignx leading");
@@ -150,6 +152,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 		loginPane.add(lblWeChat, "cell 0 7,alignx trailing");
 		
 		wechat = new JTextField();
+		wechat.setToolTipText("\u4F60\u7684\u5FAE\u4FE1\u6635\u79F0\uFF0C\u6216\u8005\u4F60\u7528\u6765\u8054\u7CFB\u7684\u6635\u79F0");
 		wechat.setFont(new Font("微软雅黑", Font.PLAIN, 13));
 		loginPane.add(wechat, "cell 1 7,alignx leading");
 		wechat.setColumns(20);
@@ -560,7 +563,7 @@ public class RegisteFrame extends JFrame implements ActionListener{
 							}
 						} 
 						else {
-						//用户名是否重复
+						
 						JOptionPane.showMessageDialog(null, "电话号码必须在9-11位之间");
 						mobile.selectAll();
 						mobile.requestFocus();

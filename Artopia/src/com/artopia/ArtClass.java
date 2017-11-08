@@ -18,6 +18,7 @@ public class ArtClass {
 		// TODO Auto-generated constructor stub
 	}
 
+	//查询今天的课程（在课程结束之前）
 	public String[] findCurrentClass(String day) {
 		
 
@@ -45,7 +46,36 @@ public class ArtClass {
 		}
 		return null;
 	}
+	
+	//查询今天的课程（在今天结束之前）
+	public String[] findTodayClass(String day) {
+		
 
+		Connection conn =db.connectDB();
+		
+		try {
+			
+			Statement statement = conn.createStatement();
+			ResultSet rSet = statement.executeQuery("SELECT `class_name` FROM `atp_class` WHERE `class_day` = '"
+					+day+"'");
+
+			List<String> list=new ArrayList<String>();
+			while (rSet.next()) {
+				list.add(rSet.getString(1));
+			}
+			
+			rSet.close();
+			statement.close();
+			conn.close();
+			
+			return new Functions().noDuplicate(new Functions().getList(list));  
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+	}
+
+	//查询所有的课程
 	public String[] getAllClasses() {
 		
 		Connection conn =db.connectDB();

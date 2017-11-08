@@ -11,23 +11,36 @@ import java.util.Vector;
 import javax.swing.JComboBox;
 import javax.swing.UIManager;
 
+	
 public class Functions {
+	
+	static final String[] weekDays = {"星期日","星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}; 
 	
 	//获取制定日期的星期
 	public String getWeekOfDate(Date dt) {
-        String[] weekDays = {"星期天","星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+//        String[] weekDays = {"星期天","星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
         int day = cal.get(Calendar.DAY_OF_WEEK) - 1;
-        if (day < 0)
-            day = 0;
+//        if (day < 0)
+//            day = 0;
         return weekDays[day];
     }
+	
+	public int getWeekdayNum(Date dt) {
+		Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        int day = cal.get(Calendar.DAY_OF_WEEK) - 1;
+        if(day == 0) {
+        	day = 7;
+        }
+        return day;
+	}
 	
 	//比较2个星期数之间差的天数
 	public int getNumofDay(String bookday,String classday) {
 		
-		String[] weekDays = {"星期天","星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+//		String[] weekDays = {"星期天","星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
 		int index1=0,index2=0,daynum =0;
 		for(int i=0;i<weekDays.length;i++) {
 			if(weekDays[i].equals(bookday)) {
@@ -57,6 +70,16 @@ public class Functions {
 		cal.add(Calendar.DAY_OF_MONTH, getNumofDay(getWeekOfDate(new Date()), day)+7*index);
 		return (dateFormat.format(cal.getTime()));
 	
+		
+	}
+
+	//获取7天前的日期
+	public String getPreDate() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, -7);
+		return (dateFormat.format(cal.getTime()));
 		
 	}
 
@@ -120,6 +143,32 @@ public class Functions {
 			}
 		}
 		return data;
+	}
+
+	public String[] getWeekList(Date dt) {
+		// TODO Auto-generated method stub
+		Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        int day = cal.get(Calendar.DAY_OF_WEEK);
+
+        
+        List<String> weeklist = new ArrayList<String>();
+        
+        //如果不是星期日
+        if(day>1) {
+        	//今天前面共有8-day天，除去星期天，是7-day天
+        	for(int i =0; i<7-day;i++) {
+        		weeklist.add("上"+weekDays[day+i]);
+        	}
+        	weeklist.add("上星期日");
+        	
+        	for(int i=1; i<day;i++) {
+        		weeklist.add(weekDays[i]);
+        	}
+        
+        }
+        
+		return getList(weeklist);
 	}
 
 

@@ -156,5 +156,75 @@ public class Account {
 		return userlist;
 	}
 
+	public String getPassword(int uid) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		String password = null;
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet rSet = statement.executeQuery("SELECT `user_password` FROM `atp_user` WHERE `user_id` = '"
+			+uid+"'");
+			if(rSet.next()) {
+
+				password = rSet.getString(1);					
+				
+			}
+			rSet.close();	
+			statement.close();
+			conn.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return password;
+	}
+
+	public void modifyPasswod(int uid,String password) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		try {
+			Statement statement = conn.createStatement();
+		
+			statement.executeUpdate("UPDATE atp_user SET user_password = '"+password+"'WHERE user_id = '"+uid+"'");
+			
+			statement.close();
+			conn.close();
+		
+		} catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+
+	public void updateInfo(int uid, String mobile, String wechat) {
+		// TODO Auto-generated method stub
+		Connection conn =db.connectDB();
+		
+		try {
+			Statement statement = conn.createStatement();
+		
+			if(mobile !=null && wechat != null) {
+				statement.executeUpdate("UPDATE atp_user SET user_mobile = '"+mobile+"', user_wechat = '"+wechat+"' WHERE user_id = '"+uid+"'");
+			}
+			else {
+				if(mobile ==null) {
+					statement.executeUpdate("UPDATE atp_user SET user_wechat = '"+wechat+"' WHERE user_id = '"+uid+"'");
+				}
+				else if(wechat == null) {
+					statement.executeUpdate("UPDATE atp_user SET user_mobile = '"+mobile+"' WHERE user_id = '"+uid+"'");
+				}
+			}
+			
+			statement.close();
+			conn.close();
+		
+		} catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+	}
+
 
 }
